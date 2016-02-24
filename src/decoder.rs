@@ -144,8 +144,7 @@ fn is_valid_format(string: &str) -> Option<&'static str> {
 	return None
 }
 
-fn decode_list(peekable_input: &mut Peekable<Chars>) 
-								-> Result<Option<Vec<BencodingResult>>, &'static str> {
+fn decode_list(peekable_input: &mut Peekable<Chars>) -> Result<Option<Vec<BencodingResult>>, &'static str> {
 	if let Some(next_char) = peekable_input.peek() {
 		if *next_char != 'l' {
 			return Ok(None)
