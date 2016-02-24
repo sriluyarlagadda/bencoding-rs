@@ -1,4 +1,4 @@
 [package]
-name = "bencoding"
+name = "bencoding-rs"
 version = "0.1.0"
 authors = ["srihari <sri_hariy@yhaoo.com>"]
