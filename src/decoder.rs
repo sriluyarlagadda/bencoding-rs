@@ -57,17 +57,62 @@ fn decode_peekable_bytes(peekable_input:& mut Peekable<IntoIter<u8>>) -> Result<
 		return Ok(BencodingResult::List(list_result))
 	}
 
-	/*let result:Result<Option<HashMap<String, BencodingResult>>, &str> = decode_map(peekable_input);
+	let result:Result<Option<HashMap<String, BencodingResult>>, &str> = decode_map_bytes(peekable_input);
 	if let Err(decode_map_error) = result {
 		return Err(decode_map_error)
 	}
 
 	if let Ok(Some(map_result)) = result {
 		return Ok(BencodingResult::Dict(map_result))
-	}*/
+	}
 	return Err("general error")
 }
 
+
+fn decode_map_bytes(peekable_input: &mut Peekable<IntoIter<u8>>) -> 
+					Result<Option<HashMap<String, BencodingResult>>, &'static str> {
+	if let Some(next_char) = peekable_input.peek() {
+		if *next_char as char != 'd' {
+			return Ok(None)
+		}
+	}
+
+	peekable_input.next();
+	let mut bencoded_dict:HashMap<String, BencodingResult> = HashMap::new();
+
+	loop {
+		let mut is_e:bool = false;
+		if let Some(next_char) = peekable_input.peek() {
+			if *next_char as char == 'e' {
+				is_e = true;
+			}
+		} else {
+			return Err("end of input")
+		}
+		if is_e {
+			peekable_input.next();
+			return Ok(Some(bencoded_dict))
+		}
+
+		let mut key:String = String::new();
+
+		if let Ok(Some(decoded_string)) = decode_string_bytes(peekable_input) {
+			if let Ok(bencoded_string) = String::from_utf8(decoded_string) {
+				key = bencoded_string;
+			} else {
+				return Err("Key is not valid string");
+			}
+		}
+
+		let result: Result<BencodingResult, &str> = decode_peekable_bytes(peekable_input);
+		if let Ok(bencoded_result) = result {
+			bencoded_dict.insert(key, bencoded_result);
+		} else {
+			return Err(result.err().unwrap())
+		}
+
+	}
+}
 
 
 fn decode_peekable(peekable_input:& mut Peekable<Chars>) -> Result<BencodingResult, &'static str> {
