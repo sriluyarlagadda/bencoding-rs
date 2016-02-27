@@ -3,21 +3,20 @@ use std::collections::HashMap;
 
 mod decoder;
 
-
-
 #[derive(PartialEq , Debug)]
 pub enum BencodingResult {
 	Str(String),
 	Int(i64),
 	List(Vec<BencodingResult>),
-	Dict(HashMap<String, BencodingResult>)
+	Dict(HashMap<String, BencodingResult>),
+	Bytes(Vec<u8>)
 }
 
 
 #[cfg(test)]
 mod tests {
 	use ::BencodingResult;
-	use decoder::{decode};
+	use decoder::{decode, decode_bytes};
 	use std::collections::HashMap;
 
 	#[test]
@@ -26,6 +25,8 @@ mod tests {
 		assert_eq!(decode("3:ifer"), Ok(BencodingResult::Str(String::from("ife"))));
 
 		assert_eq!(decode("3:s"), Err("Decoding Error: not enough characters"));
+
+		assert_eq!(decode_bytes(String::from("4:spam").into_bytes()), Ok(BencodingResult::Bytes("spam".bytes().collect::<Vec<u8>>())))
 	}
 
 	#[test]
@@ -35,6 +36,8 @@ mod tests {
 		assert_eq!(decode("i-3e"), Ok(BencodingResult::Int(-3)));
 		assert_eq!(decode("i-42e"), Ok(BencodingResult::Int(-42)));
 
+		assert_eq!(decode_bytes(String::from("i-42e").into_bytes()), Ok(BencodingResult::Int(-42)));
+
 		assert_eq!(decode("i2n4e"), Err("parse error: not a number"));
 		assert_eq!(decode("i-e"), Err("parse error: not a number"));
 		assert_eq!(decode("ie"), Err("Empty number"));
@@ -42,6 +45,9 @@ mod tests {
 		assert_eq!(decode("i003e"), Err("Number starts with 0"));
 		assert_eq!(decode("i-0e"), Err("Number -0 not valid"));
 		assert_eq!(decode("i23"), Err("integer decoding error:did not find 'e'"));
+
+		assert_eq!(decode_bytes(String::from("i2n4e").into_bytes()), Err("parse error: not a number"));
+
 	}
 
 	#[test]
@@ -50,6 +56,9 @@ mod tests {
 
 		let bencode_str:BencodingResult = BencodingResult::Str(String::from("spam"));
 		assert_eq!(decode("l4:spame"), Ok(BencodingResult::List(vec![bencode_str])));
+
+		let bencode_str_bytes:BencodingResult = BencodingResult::Bytes("spam".bytes().collect::<Vec<u8>>());
+		assert_eq!(decode_bytes(String::from("l4:spame").into_bytes()), Ok(BencodingResult::List(vec![bencode_str_bytes])));
 
 		let bencode_str_spam:BencodingResult = BencodingResult::Str(String::from("spam"));
 		let bencode_int_24:BencodingResult = BencodingResult::Int(24);
