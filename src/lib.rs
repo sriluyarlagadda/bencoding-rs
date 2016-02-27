@@ -5,7 +5,6 @@ mod decoder;
 
 #[derive(PartialEq , Debug, Clone)]
 pub enum BencodingResult {
-	Str(String),
 	Int(i64),
 	List(Vec<BencodingResult>),
 	Dict(HashMap<String, BencodingResult>),
