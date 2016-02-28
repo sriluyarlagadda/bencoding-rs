@@ -1,5 +1,5 @@
 use std::iter::Peekable;
-use std::str::{Chars, Bytes};
+use std::str::Chars;
 use std::num::ParseIntError;
 use std::collections::HashMap;
 use super::BencodingResult;
@@ -145,7 +145,7 @@ fn decode_peekable(peekable_input:& mut Peekable<IntoIter<u8>>) -> Result<Bencod
 	}
 
 	if let Ok(Some(decoded_string)) = result {
-		return Ok(BencodingResult::Bytes(decoded_string))
+		return Ok(BencodingResult::ByteString(decoded_string))
 	}
 
 	let result:Result<Option<i64>, &str> = decode_int(peekable_input);

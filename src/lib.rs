@@ -8,7 +8,7 @@ pub enum BencodingResult {
 	Int(i64),
 	List(Vec<BencodingResult>),
 	Dict(HashMap<String, BencodingResult>),
-	Bytes(Vec<u8>)
+	ByteString(Vec<u8>)
 }
 
 
@@ -23,8 +23,8 @@ mod tests {
 
 		assert_eq!(decode(convert_str_to_vec_u8("3:s")), Err("Decoding Error: not enough characters"));
 
-		assert_eq!(decode(convert_str_to_vec_u8("4:spam")), Ok(BencodingResult::Bytes(convert_str_to_vec_u8("spam"))));
-		assert_eq!(decode(convert_str_to_vec_u8("3:ifer")), Ok(BencodingResult::Bytes(convert_str_to_vec_u8("ife"))));
+		assert_eq!(decode(convert_str_to_vec_u8("4:spam")), Ok(BencodingResult::ByteString(convert_str_to_vec_u8("spam"))));
+		assert_eq!(decode(convert_str_to_vec_u8("3:ifer")), Ok(BencodingResult::ByteString(convert_str_to_vec_u8("ife"))));
 
 	}
 
@@ -52,13 +52,13 @@ mod tests {
 	fn test_list() {
 		assert_eq!(decode(convert_str_to_vec_u8("le")), Ok(BencodingResult::List(vec![])));
 
-		let bencode_str_bytes:BencodingResult = BencodingResult::Bytes("spam".bytes().collect::<Vec<u8>>());
+		let bencode_str_bytes:BencodingResult = BencodingResult::ByteString("spam".bytes().collect::<Vec<u8>>());
 		assert_eq!(decode(String::from("l4:spame").into_bytes()), Ok(BencodingResult::List(vec![bencode_str_bytes])));
 
-		let bencode_byte_spam:BencodingResult = BencodingResult::Bytes(convert_str_to_vec_u8("spam"));
+		let bencode_byte_spam:BencodingResult = BencodingResult::ByteString(convert_str_to_vec_u8("spam"));
 		let bencode_int_24:BencodingResult = BencodingResult::Int(24);
 		let bencode_int_35:BencodingResult = BencodingResult::Int(35);
-		let bencode_byte_wat = BencodingResult::Bytes(convert_str_to_vec_u8("wat"));
+		let bencode_byte_wat = BencodingResult::ByteString(convert_str_to_vec_u8("wat"));
 		assert_eq!(decode(convert_str_to_vec_u8("l4:spami24e3:wati35ee")), Ok(BencodingResult::List(vec![bencode_byte_spam, 
 														bencode_int_24, bencode_byte_wat, bencode_int_35])));
 	}
@@ -75,8 +75,8 @@ mod tests {
 
 		assert_eq!(decode(convert_str_to_vec_u8("d4:spami24e")), Err("end of input"));
 
-		let bencode_str_a:BencodingResult = BencodingResult::Bytes(convert_str_to_vec_u8("a"));
-		let becode_str_bee:BencodingResult = BencodingResult::Bytes(convert_str_to_vec_u8("b"));
+		let bencode_str_a:BencodingResult = BencodingResult::ByteString(convert_str_to_vec_u8("a"));
+		let becode_str_bee:BencodingResult = BencodingResult::ByteString(convert_str_to_vec_u8("b"));
 
 		let mut map: HashMap<String, BencodingResult> = HashMap::new();
 		map.insert(String::from("spam"), BencodingResult::List(vec![bencode_str_a , becode_str_bee]));
