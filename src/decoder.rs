@@ -29,7 +29,8 @@ fn decode_string(peekable_input: &mut Peekable<IntoIter<u8>>) -> Result<Option<V
 
 	let next_char:char = *(peekable_input.peek().unwrap()) as char;
 	if next_char != ':' {
-		return Err(": does not exist after number invalid bencoded string after count")
+		println!("decode string next_char {}", next_char);
+		return Err(": does not exist after number invalid bencoded string after count {}")
 	}
 	peekable_input.next();
 
