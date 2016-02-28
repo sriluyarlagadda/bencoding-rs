@@ -1,5 +1,4 @@
 use std::iter::Peekable;
-use std::str::Chars;
 use std::num::ParseIntError;
 use std::collections::HashMap;
 use super::BencodingResult;

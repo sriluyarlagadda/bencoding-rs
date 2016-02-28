@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 
-mod decoder;
+pub mod decoder;
 
 #[derive(PartialEq , Debug, Clone)]
 pub enum BencodingResult {
