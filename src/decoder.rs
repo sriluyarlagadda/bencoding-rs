@@ -15,24 +15,42 @@ pub fn decode(input:Vec<u8>) -> Result<BencodingResult, &'static str> {
 }
 
 fn decode_string(peekable_input: &mut Peekable<IntoIter<u8>>) -> Result<Option<Vec<u8>>, &'static str> {
+
+
+
 	let next_char:char = *(peekable_input.peek().unwrap()) as char;
 	if !next_char.is_numeric() {
 		return Ok(None)
 	}
-
-	let count:usize = next_char.to_digit(10).unwrap() as usize;
+	let mut result_string:String = String::new();
+	result_string.push(next_char);
 	peekable_input.next();
 
-	if peekable_input.peek().is_none() {
-		return Err("unable to decode string invalid bencoded string")
+	loop {
+		let new_value:char;
+		{
+			let next_value_option = peekable_input.peek();
+			if let Some(next_value) = next_value_option {
+				new_value = *next_value as char;
+			} else {
+				return Err("string decoding error:did not find ':'")
+			}
+		}
+
+		peekable_input.next();
+		if !new_value.is_numeric() {
+			if new_value != ':' {
+			return Err(": does not exist after number invalid bencoded string")
+			} else {
+				break;
+			}
+		} else {
+			result_string.push(new_value);
+		} 
+
 	}
 
-	let next_char:char = *(peekable_input.peek().unwrap()) as char;
-	if next_char != ':' {
-		println!("decode string next_char {}", next_char);
-		return Err(": does not exist after number invalid bencoded string after count {}")
-	}
-	peekable_input.next();
+	let count:usize = result_string.parse::<u32>().unwrap() as usize;
 
 	let result_string:Vec<u8> = (peekable_input.take(count)).collect();
 	if result_string.len() != count {

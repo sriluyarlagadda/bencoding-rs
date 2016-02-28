@@ -26,6 +26,8 @@ mod tests {
 		assert_eq!(decode(convert_str_to_vec_u8("4:spam")), Ok(BencodingResult::ByteString(convert_str_to_vec_u8("spam"))));
 		assert_eq!(decode(convert_str_to_vec_u8("3:ifer")), Ok(BencodingResult::ByteString(convert_str_to_vec_u8("ife"))));
 
+		assert_eq!(decode(convert_str_to_vec_u8("41:http://bttracker.debian.org:6969/announce")), Ok(BencodingResult::ByteString(convert_str_to_vec_u8("http://bttracker.debian.org:6969/announce"))))
+
 	}
 
 	fn convert_str_to_vec_u8(string: &str) -> Vec<u8> {
